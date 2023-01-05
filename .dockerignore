@@ -1,0 +1,14 @@
+./database/dbdiagram
+./database/migrations
+./database/queries
+./database/tests
+
+./proto
+
+.dockerignore
+docker-compose.yaml
+dockerfile
+
+makefile
+Readme.md
+sqlc.yaml
