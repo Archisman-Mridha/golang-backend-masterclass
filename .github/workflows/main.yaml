@@ -11,6 +11,23 @@ jobs:
     build:
         name: Build
         runs-on: ubuntu-latest
+
+        services:
+            postgres:
+                image: postgres:14.4-alpine
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: simple_bank
+                #* set health checks to wait until postgres container has started
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 5432:5432
+
         steps:
 
             - name: Setup Go 1.x
@@ -22,9 +39,17 @@ jobs:
             - name: Checkout application code
               uses: actions/checkout@v2
 
-            - name: Resolve application dependencies
+            - name: Install GoLang migrate
               run: |
-                go mod tidy
+                curl -L https://github.com/golang-migrate/migrate/releases/download/v4.12.2/migrate.linux-amd64.tar.gz | tar xvz
+                sudo mv migrate.linux-amd64 /usr/bin/migrate
+                which migrate
+
+            - name: Run database migrations
+              run: make run-up-migrations
+
+            - name: Resolve application dependencies
+              run: go mod tidy
 
             - name: Run tests
               run: go test -v ./...
