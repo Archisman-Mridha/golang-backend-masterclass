@@ -1,0 +1,16 @@
+syntax= "proto3";
+
+package simple_bank;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package= "simple_bank/proto";
+
+message User {
+
+    string username= 1;
+    string name= 2;
+    string email= 3;
+    google.protobuf.Timestamp passwordChangedAt= 4;
+    google.protobuf.Timestamp createdAt= 5;
+}
