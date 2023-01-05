@@ -6,6 +6,7 @@ package database
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Account struct {
@@ -31,4 +32,12 @@ type Transfer struct {
 	// it should always be positive
 	Amount    int64        `json:"amount"`
 	CreatedAt sql.NullTime `json:"created_at"`
+}
+
+type User struct {
+	Username       string    `json:"username"`
+	Hashedpassword string    `json:"hashedpassword"`
+	Name           string    `json:"name"`
+	Email          string    `json:"email"`
+	Createdat      time.Time `json:"createdat"`
 }
