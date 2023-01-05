@@ -26,10 +26,11 @@ update accounts
     set balance= @balance
         where id= @id;
 
--- name: UpdateAccountBalance :exec
+-- name: UpdateAccountBalance :one
 update accounts
     set balance= balance + @amount
-        where id= @id;
+        where id= @id
+            returning *;
 
 -- name: DeleteAccount :exec
 delete from accounts

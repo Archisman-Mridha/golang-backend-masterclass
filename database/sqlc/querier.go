@@ -22,7 +22,7 @@ type Querier interface {
 	ListMoneyTransfers(ctx context.Context, arg ListMoneyTransfersParams) ([]Transfer, error)
 	TransferMoney(ctx context.Context, arg TransferMoneyParams) (Transfer, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) error
-	UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) error
+	UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) (Account, error)
 }
 
 var _ Querier = (*Queries)(nil)

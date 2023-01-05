@@ -57,7 +57,7 @@ func(repository *Repository) MoneyTransferTransaction(
 			//! update balance of both accounts
 
 			// for sender
-			error= queries.UpdateAccountBalance(
+			updatedSenderAccountDetails, error := queries.UpdateAccountBalance(
 				ctx, database.UpdateAccountBalanceParams{
 
 					ID: parameters.SenderAccountID,
@@ -66,9 +66,10 @@ func(repository *Repository) MoneyTransferTransaction(
 			)
 
 			if error != nil { return error }
+			output.SenderAccountDetails= updatedSenderAccountDetails
 
 			// for receiver
-			error= queries.UpdateAccountBalance(
+			updatedReceiverAccountDetails, error := queries.UpdateAccountBalance(
 				ctx, database.UpdateAccountBalanceParams{
 
 					ID: parameters.ReceiverAccountID,
@@ -77,6 +78,7 @@ func(repository *Repository) MoneyTransferTransaction(
 			)
 
 			if error != nil { return error }
+			output.ReceiverAccountDetails= updatedReceiverAccountDetails
 
 			return nil
 		},

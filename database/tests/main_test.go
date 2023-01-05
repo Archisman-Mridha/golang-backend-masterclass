@@ -10,20 +10,24 @@ import (
 	database "simple_bank/database/sqlc"
 )
 
-var accountOperationQueries *database.Queries
+var (
+	accountOperationQueries *database.Queries
+	DBConnection *sql.DB
+)
 
 //* main entrypoint of unit testing inside the package
 func TestMain(m *testing.M) {
+	var error error
 
 	// creating connection with the database
-	dbConnection, error := sql.Open("postgres", "postgresql://postgres:password@localhost:5432/simple_bank?sslmode=disable")
+	DBConnection, error= sql.Open("postgres", "postgresql://postgres:password@localhost:5432/simple_bank?sslmode=disable")
 
 	if error != nil {
 		log.Fatalf("❌ error connecting to database")
 
 		log.Fatal(error.Error( )) }
 
-	accountOperationQueries= database.New(dbConnection)
+	accountOperationQueries= database.New(DBConnection)
 
 	m.Run( )
 }
