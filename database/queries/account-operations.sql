@@ -4,10 +4,16 @@ insert into accounts
     values (@owner, @balance, @currency)
         returning *;
 
--- name: GetAccount :one
+-- name: GetAccountDetails :one
 select * from accounts
-    where id= $1
+    where id= @id
         limit 1;
+
+-- name: GetAccountDetails_WithLock :one
+select * from accounts
+    where id= @id
+        limit 1
+            for no key update; --TODO: understand why "no key" was added
 
 -- name: ListAccounts :many
 select * from accounts
@@ -17,9 +23,14 @@ select * from accounts
 
 -- name: UpdateAccount :exec
 update accounts
-    set balance= $2
-        where id= $1;
+    set balance= @balance
+        where id= @id;
+
+-- name: UpdateAccountBalance :exec
+update accounts
+    set balance= balance + @amount
+        where id= @id;
 
 -- name: DeleteAccount :exec
 delete from accounts
-    where id= $1;
+    where id= @id;

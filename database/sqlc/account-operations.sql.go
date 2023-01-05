@@ -45,14 +45,34 @@ func (q *Queries) DeleteAccount(ctx context.Context, id int64) error {
 	return err
 }
 
-const getAccount = `-- name: GetAccount :one
+const getAccountDetails = `-- name: GetAccountDetails :one
 select id, owner, balance, currency, created_at from accounts
     where id= $1
         limit 1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
-	row := q.db.QueryRowContext(ctx, getAccount, id)
+func (q *Queries) GetAccountDetails(ctx context.Context, id int64) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccountDetails, id)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.Owner,
+		&i.Balance,
+		&i.Currency,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getAccountDetails_WithLock = `-- name: GetAccountDetails_WithLock :one
+select id, owner, balance, currency, created_at from accounts
+    where id= $1
+        limit 1
+            for no key update
+`
+
+func (q *Queries) GetAccountDetails_WithLock(ctx context.Context, id int64) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccountDetails_WithLock, id)
 	var i Account
 	err := row.Scan(
 		&i.ID,
@@ -65,6 +85,7 @@ func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
 }
 
 const listAccounts = `-- name: ListAccounts :many
+
 select id, owner, balance, currency, created_at from accounts
     order by id
         limit $1
@@ -76,6 +97,7 @@ type ListAccountsParams struct {
 	Offset int32 `json:"offset"`
 }
 
+// TODO: understand why "no key" was added
 func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error) {
 	rows, err := q.db.QueryContext(ctx, listAccounts, arg.Limit, arg.Offset)
 	if err != nil {
@@ -107,16 +129,32 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 
 const updateAccount = `-- name: UpdateAccount :exec
 update accounts
-    set balance= $2
-        where id= $1
+    set balance= $1
+        where id= $2
 `
 
 type UpdateAccountParams struct {
-	ID      int64 `json:"id"`
 	Balance int64 `json:"balance"`
+	ID      int64 `json:"id"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) error {
-	_, err := q.db.ExecContext(ctx, updateAccount, arg.ID, arg.Balance)
+	_, err := q.db.ExecContext(ctx, updateAccount, arg.Balance, arg.ID)
+	return err
+}
+
+const updateAccountBalance = `-- name: UpdateAccountBalance :exec
+update accounts
+    set balance= balance + $1
+        where id= $2
+`
+
+type UpdateAccountBalanceParams struct {
+	Amount int64 `json:"amount"`
+	ID     int64 `json:"id"`
+}
+
+func (q *Queries) UpdateAccountBalance(ctx context.Context, arg UpdateAccountBalanceParams) error {
+	_, err := q.db.ExecContext(ctx, updateAccountBalance, arg.Amount, arg.ID)
 	return err
 }
