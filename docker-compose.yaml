@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+    postgres:
+        container_name: postgres
+        image: postgres:14.4-alpine
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            PG_DATA: /var/lib/data/postgresql
+            POSTGRES_DB: simple_bank
