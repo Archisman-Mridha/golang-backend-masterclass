@@ -1,9 +1,9 @@
 create table users (
     username varchar primary key,
-    hashedPassword varchar not null,
+    hashed_password varchar not null,
     name varchar not null,
     email varchar unique not null,
-    createdAt timestamptz not null default(now( ))
+    created_at timestamptz not null default(now( ))
 );
 
 alter table accounts

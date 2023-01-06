@@ -14,9 +14,9 @@ type SimpleBankGRPCServer struct {
 	proto.UnimplementedSimpleBankServer
 }
 
-func StartGRPCServer( ) {
+func StartGRPCServer(serverAddress string) {
 
-	tcpListener, error := net.Listen("tcp", "0.0.0.0:4000")
+	tcpListener, error := net.Listen("tcp", serverAddress)
 	if error != nil {
 		log.Println("❌ error creating tcp listener for gRPC server")
 

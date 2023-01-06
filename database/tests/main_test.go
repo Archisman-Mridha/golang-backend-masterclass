@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"simple_bank/configuration"
 	database "simple_bank/database/sqlc"
 )
 
@@ -19,8 +20,14 @@ var (
 func TestMain(m *testing.M) {
 	var error error
 
+	appConfiguration, error := configuration.LoadAppConfiguration("../../envs")
+	if error != nil {
+		log.Fatal("❌ error loading application configurations")
+
+		log.Fatal(error.Error( )) }
+
 	// creating connection with the database
-	DBConnection, error= sql.Open("postgres", "postgresql://postgres:password@localhost:5432/simple_bank?sslmode=disable")
+	DBConnection, error= sql.Open("postgres", appConfiguration.POSTGRES_DB_URL)
 
 	if error != nil {
 		log.Fatalf("❌ error connecting to database")
